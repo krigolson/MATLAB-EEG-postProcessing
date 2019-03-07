@@ -11,12 +11,8 @@ function [peaks peaktimes peaktopo] = meanPeakDetection(data,times,channel,peakT
     
     for conditionCounter = 1:numberOfConditions
         
-        conditionCounter
-        
         for subjectCounter = 1:numberOfParticipants
-            
-            subjectCounter
-            
+
             peakData = squeeze(data(:,:,conditionCounter,subjectCounter));
             peakMaxData = squeeze(peakData(channel,:));
             [meanPeak] = mean(peakMaxData(startSearch:endSearch));
