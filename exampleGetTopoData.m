@@ -10,4 +10,4 @@ load('channelLocations.mat');
 dwERP = squeeze(erpData(:,:,1,:) - erpData(:,:,2,:));
 
 % get the topo data
-topoData = doGetTopoData(dwERP,250,5,0,1,0);
+topoData = doGetTopoData(erpData,250,5,0,1,0);

@@ -17,10 +17,9 @@ function [topoData] = doGetTopoData(data,centre,edge,type,minOrMax,channel)
     % channel is only used for individual max searches
     
     if ndims(data) == 3
-    
+        
+        tempData = data(:,centre-edge:centre+edge,:);
         if type == 0
-            
-            tempData = data(:,centre-edge:centre+edge,:);
             tempData = squeeze(mean(tempData,2));
             if minOrMax == 1
                 [maxs maxPoints] = max(tempData,[],1);
@@ -32,78 +31,108 @@ function [topoData] = doGetTopoData(data,centre,edge,type,minOrMax,channel)
                 [foundTopo foundLocation] = find(maxPoints == counter);
                 topoPercents(counter) = sum(foundTopo)/size(tempData,2)*100;
             end
-            topoData.mean = mean(tempData,2);
-            topoData.individual = tempData;
-            topoData.percents = topoPercents;
-            
+            meanTopoData = mean(tempData,2);
+            individualTopoData = tempData;
         end
         if type == 1
-            if minOrMax == 1
-                tempData = data(:,centre-edge:centre+edge,:);
-                for subjectCounter = 1:size(tempData,3)
-                    subjectData = [];
-                    subjectData = squeeze(tempData(:,:,subjectCounter));
+            for subjectCounter = 1:size(tempData,3)
+                subjectData = [];
+                subjectData = squeeze(tempData(:,:,subjectCounter));
+                if minOrMax == 1
                     [chanMax chanMaxLocation] = max(subjectData,[],2);
                     [globalMax globalLocation] = max(chanMax);
-                    maxLocation = chanMaxLocation(globalLocation);
-                    individualTopoData(:,subjectCounter) = squeeze(subjectData(:,maxLocation));
-                    maximumChannel(subjectCounter) = globalLocation;
-                end
-                meanTopoData = mean(individualTopoData,2);
-                for counter = 1:size(tempData,1)
-                    [foundTopo foundLocation] = find(maximumChannel == counter);
-                    topoPercents(counter) = sum(foundTopo)/size(tempData,3)*100;
-                end
-                topoData.mean = meanTopoData;
-                topoData.individual = individualTopoData;
-                topoData.percents = topoPercents;
-            end
-            if minOrMax == 0
-                tempData = data(:,centre-edge:centre+edge,:);
-                for subjectCounter = 1:size(tempData,3)
-                    subjectData = [];
-                    subjectData = squeeze(tempData(:,:,subjectCounter));
+                else
                     [chanMax chanMaxLocation] = min(subjectData,[],2);
-                    [globalMax globalLocation] = min(chanMax);
-                    maxLocation = chanMaxLocation(globalLocation);
-                    individualTopoData(:,subjectCounter) = squeeze(subjectData(:,maxLocation));
-                    maximumChannel(subjectCounter) = globalLocation;
+                    [globalMax globalLocation] = min(chanMax); 
                 end
-                meanTopoData = mean(individualTopoData,2);
-                for counter = 1:size(tempData,1)
-                    [foundTopo foundLocation] = find(maximumChannel == counter);
-                    topoPercents(counter) = sum(foundTopo)/size(tempData,3)*100;
-                end
-                topoData.mean = meanTopoData;
-                topoData.individual = individualTopoData;
-                topoData.percents = topoPercents;
-            end 
+                maxLocation = chanMaxLocation(globalLocation);
+                individualTopoData(:,subjectCounter) = squeeze(subjectData(:,maxLocation));
+                maximumChannel(subjectCounter) = globalLocation;
+            end
+            meanTopoData = mean(individualTopoData,2);
+            for counter = 1:size(tempData,1)
+                [foundTopo foundLocation] = find(maximumChannel == counter);
+                topoPercents(counter) = sum(foundTopo)/size(tempData,3)*100;
+            end
         end
         if type == 2
-             if minOrMax == 1
-                tempData = data(:,centre-edge:centre+edge,:);
-                for subjectCounter = 1:size(tempData,3)
-                    subjectData = [];
-                    subjectData = squeeze(tempData(:,:,subjectCounter));
+            for subjectCounter = 1:size(tempData,3)
+                subjectData = [];
+                subjectData = squeeze(tempData(:,:,subjectCounter));
+                if minOrMax == 1
                     [chanMax chanMaxLocation] = max(subjectData(channel,:));
-                    individualTopoData(:,subjectCounter) = subjectData(:,chanMaxLocation);
-                    maximumChannel(subjectCounter) = channel;
+                else
+                    [chanMax chanMaxLocation] = min(subjectData(channel,:));
                 end
-                meanTopoData = mean(individualTopoData,2);
+                individualTopoData(:,subjectCounter) = subjectData(:,chanMaxLocation);
+                maximumChannel(subjectCounter) = channel;
+            end
+            meanTopoData = mean(individualTopoData,2);
+            for counter = 1:size(tempData,1)
+                [foundTopo foundLocation] = find(maximumChannel == counter);
+                topoPercents(counter) = sum(foundTopo)/size(tempData,3)*100;
+            end
+        end
+        topoData.mean = meanTopoData;
+        topoData.individual = individualTopoData;
+        topoData.percents = topoPercents;
+        
+    else % assume ndims == 4
+        
+        nConditions = size(data,3);
+
+        for conditionCounter = 1:nConditions
+
+            tempData = [];
+            meanTopoData = [];
+            individualTopoData = [];
+            topoPercents = [];
+            tempData = squeeze(data(:,centre-edge:centre+edge,conditionCounter,:));
+            if type == 0
+                tempData = squeeze(mean(tempData,2));
+                if minOrMax == 1
+                    [maxs maxPoints] = max(tempData,[],1);
+                else
+                    [maxs maxPoints] = min(tempData,[],1);
+                end
+                topoPercents(1:size(tempData,1)) = 0;
                 for counter = 1:size(tempData,1)
-                    [foundTopo foundLocation] = find(maximumChannel == counter);
-                    topoPercents(counter) = sum(foundTopo)/size(tempData,3)*100;
+                    [foundTopo foundLocation] = find(maxPoints == counter);
+                    topoPercents(counter) = sum(foundTopo)/size(tempData,2)*100;
                 end
-                topoData.mean = meanTopoData;
-                topoData.individual = individualTopoData;
-                topoData.percents = topoPercents;
-            end           
-             if minOrMax == 0
-                tempData = data(:,centre-edge:centre+edge,:);
+                meanTopoData = mean(tempData,2);
+                individualTopoData = tempData;
+            end
+            if type == 1
                 for subjectCounter = 1:size(tempData,3)
                     subjectData = [];
                     subjectData = squeeze(tempData(:,:,subjectCounter));
-                    [chanMax chanMaxLocation] = min(subjectData(channel,:));
+                    if minOrMax == 1
+                        [chanMax chanMaxLocation] = max(subjectData,[],2);
+                        [globalMax globalLocation] = max(chanMax);
+                    else
+                        [chanMax chanMaxLocation] = min(subjectData,[],2);
+                        [globalMax globalLocation] = min(chanMax); 
+                    end
+                    maxLocation = chanMaxLocation(globalLocation);
+                    individualTopoData(:,subjectCounter) = squeeze(subjectData(:,maxLocation));
+                    maximumChannel(subjectCounter) = globalLocation;
+                end
+                meanTopoData = mean(individualTopoData,2);
+                for counter = 1:size(tempData,1)
+                    [foundTopo foundLocation] = find(maximumChannel == counter);
+                    topoPercents(counter) = sum(foundTopo)/size(tempData,3)*100;
+                end
+            end
+            if type == 2
+                for subjectCounter = 1:size(tempData,3)
+                    subjectData = [];
+                    subjectData = squeeze(tempData(:,:,subjectCounter));
+                    if minOrMax == 1
+                        [chanMax chanMaxLocation] = max(subjectData(channel,:));
+                    else
+                        [chanMax chanMaxLocation] = min(subjectData(channel,:));
+                    end
                     individualTopoData(:,subjectCounter) = subjectData(:,chanMaxLocation);
                     maximumChannel(subjectCounter) = channel;
                 end
@@ -112,14 +141,14 @@ function [topoData] = doGetTopoData(data,centre,edge,type,minOrMax,channel)
                     [foundTopo foundLocation] = find(maximumChannel == counter);
                     topoPercents(counter) = sum(foundTopo)/size(tempData,3)*100;
                 end
-                topoData.mean = meanTopoData;
-                topoData.individual = individualTopoData;
-                topoData.percents = topoPercents;
-            end             
-        end  
-        
-    else
-        
+            end
+            
+            topoData.mean(:,conditionCounter) = meanTopoData;
+            topoData.individual(:,conditionCounter,:) = individualTopoData;
+            topoData.percents(:,conditionCounter) = topoPercents;
+            
+        end
+
     end
     
 end    
