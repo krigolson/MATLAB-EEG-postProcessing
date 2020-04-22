@@ -1,10 +1,8 @@
 function [peakData] = doPeakDetection(data,times,channel,peakTime,peakWidth,type)
 
-    % function to do a max peak detection
+    % function to do peak detection
     % data needs to be channels x time x conditions x participants
     % by O. Krigolson
-    % need to pass in data in the form of channels x time x conditions x
-    % participants
     % need to pass in the channel to search on
     % need to pass in the peak time and the width of the search
     % need to pass in the type, 0 for mean, 1 for max, 2 for min
