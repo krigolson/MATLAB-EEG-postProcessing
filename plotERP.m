@@ -1,4 +1,4 @@
-function doERPPlot(time,data)
+function plotERP(time,data)
 
 % this function plots an ERP waveform. The whole point of this is to hide a
 % bunch of settings for learning purposes
