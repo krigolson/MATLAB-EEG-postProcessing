@@ -6,7 +6,7 @@ function doPlot2DTopo(data,locs)
     
     % set the background colour to white
     set(gcf,'color','w');
-    topoplot(data,locs,'electrodes','off','whitebk','on','shading','interp');
+    topoplot(data,locs,'electrodes','off','whitebk','on','shading','interp','plotrad',0.5);
     axis([-0.6 0.6 -0.6 0.6]);
     
 end
