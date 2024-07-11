@@ -1,4 +1,4 @@
-function  makeFOOOFPlot(aperiodicData,powerData,task,channel)
+function  makeFOOOFPlot(aperiodicData,powerData,task,channel,fooofFolder)
 
 %Aperiodic data is a participant-meaned matrix of aperiodic series data
 %for a given channel and task with the dimensions of frequency x condition. 
@@ -10,17 +10,17 @@ f.WindowState = 'maximized';
 title(['FOOOF results for ' task ' Task - ' channel])
 hold on
 
-colours(:,1) = 'black';
-colours(:,2) = 'blue';
-colours(:,3) = 'red';
-colours(:,4) = 'green';
+colours(:,1) = {'black'};
+colours(:,2) = {'blue'};
+colours(:,3) = {'red'};
+colours(:,4) = {'green'};
 
 
 for condition = 1:numConditions
-    a(condition) = plot(aperiodicData(:,condition),'Color',colours(condition),'LineWidth',2);
+    a(condition) = plot(aperiodicData(:,condition),'Color',colours{condition},'LineWidth',2);
     hold on
 
-    b(condition) = plot(powerData(:,condition),'Color',colours(condition),'LineStyle','--','LineWidth',2);
+    b(condition) = plot(powerData(:,condition),'Color',colours{condition},'LineStyle','--','LineWidth',2);
     hold on
 
 end
@@ -30,3 +30,5 @@ legend boxoff
 
 ylabel('Power')
 xlabel('Frequency')
+
+saveas(f,fullfile(fooofFolder,['FOOOF_' task '_' channel '.png']))
