@@ -25,9 +25,9 @@ function [topoData] = doMake2DTopoMovie(data,locs,scaled,fileName)
         set(gcf,'color','w');
         % make the 3D headplot
         if scaled == 1
-            topoplot(data(:,counter),locs,'maplimits',[scaledMin scaledMax],'electrodes','off','whitebk','on','shading','interp');
+            topoplot(data(:,counter),locs,'maplimits',[scaledMin scaledMax],'electrodes','off','whitebk','on','shading','interp','headrad',0.485,'plotrad',0.5);
         else
-            topoplot(data(:,counter),locs,'electrodes','off','whitebk','on','shading','interp');
+            topoplot(data(:,counter),locs,'electrodes','off','whitebk','on','shading','interp','headrad',0.485,'plotrad',0.5);
         end
         axis([-0.6 0.6 -0.6 0.6]);
         % grab the current screen frame
